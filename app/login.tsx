@@ -14,10 +14,9 @@ import {
 } from 'react-native';
 import { FontAwesome, Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import { authStorage } from '../utils/authStorage';
 
-// EMAIL VÁLIDO
-const VALID_EMAIL = 'spotify@music.com';
+// Variable global para almacenar los datos del usuario registrado
+let registeredUser: { name: string; email: string; password: string } | null = null;
 
 export default function LoginScreen() {
   const [email, setEmail] = useState<string>('');
@@ -38,16 +37,14 @@ export default function LoginScreen() {
     setTimeout(() => {
       setLoading(false);
 
-      // Verificar credenciales con authStorage
-      const user = authStorage.login(email, password);
-      
-      if (user) {
+      // Verificar credenciales con if simple
+      if (registeredUser && registeredUser.email === email && registeredUser.password === password) {
         // Login exitoso
         router.replace('/home');
       } else {
         Alert.alert(
           'Error de inicio de sesión',
-          'Credenciales incorrectas.\n\nAsegúrate de haberte registrado primero con el email: ' + VALID_EMAIL
+          'Credenciales incorrectas.\n\nAsegúrate de haberte registrado primero con el email: spotify@music.com'
         );
       }
     }, 1000);
@@ -124,7 +121,6 @@ export default function LoginScreen() {
               </TouchableOpacity>
             </View>
 
-            {/* Hint para el usuario */}
             <View style={styles.hintContainer}>
               <Ionicons name="information-circle" size={16} color="#1DB954" />
               <Text style={styles.hintText}>
@@ -173,6 +169,21 @@ export default function LoginScreen() {
       </View>
     </KeyboardAvoidingView>
   );
+}
+
+// Función para obtener el usuario registrado (usada en home)
+export function getRegisteredUser() {
+  return registeredUser;
+}
+
+// Función para registrar usuario (usada en register)
+export function setRegisteredUser(name: string, email: string, password: string) {
+  registeredUser = { name, email, password };
+}
+
+// Función para cerrar sesión (usada en home)
+export function logoutUser() {
+  registeredUser = null;
 }
 
 const styles = StyleSheet.create({

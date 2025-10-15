@@ -10,15 +10,15 @@ import {
 } from 'react-native';
 import { FontAwesome, Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import { authStorage } from '../utils/authStorage';
+import { getRegisteredUser, logoutUser } from './login';
 
 export default function HomeScreen() {
   const router = useRouter();
   const [userName, setUserName] = useState<string>('Usuario');
 
   useEffect(() => {
-    // Obtener el nombre del usuario actual
-    const currentUser = authStorage.getCurrentUser();
+    // Obtener el nombre del usuario registrado
+    const currentUser = getRegisteredUser();
     if (currentUser) {
       setUserName(currentUser.name);
     }
@@ -26,7 +26,7 @@ export default function HomeScreen() {
 
   const handleLogout = () => {
     Vibration.vibrate(50);
-    authStorage.logout();
+    logoutUser();
     router.replace('/');
   };
 

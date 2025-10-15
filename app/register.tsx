@@ -15,7 +15,7 @@ import {
 } from 'react-native';
 import { FontAwesome, Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import { authStorage } from '../utils/authStorage';
+import { setRegisteredUser } from './login';
 
 // EMAIL VÁLIDO PARA REGISTRO
 const VALID_EMAIL = 'spotify@music.com';
@@ -34,16 +34,19 @@ export default function RegisterScreen() {
   };
 
   const handleRegister = async (): Promise<void> => {
+    // Validación: campos vacíos
     if (!name || !email || !password) {
       Alert.alert('Error', 'Por favor completa todos los campos');
       return;
     }
 
+    // Validación: email válido
     if (!validateEmail(email)) {
       Alert.alert('Error', 'Por favor ingresa un correo válido');
       return;
     }
 
+    // Validación: solo el email específico
     if (email !== VALID_EMAIL) {
       Alert.alert(
         'Error',
@@ -52,13 +55,9 @@ export default function RegisterScreen() {
       return;
     }
 
+    // Validación: longitud de contraseña
     if (password.length < 6) {
       Alert.alert('Error', 'La contraseña debe tener al menos 6 caracteres');
-      return;
-    }
-
-    if (authStorage.isEmailRegistered(email)) {
-      Alert.alert('Error', 'Este correo ya está registrado. Inicia sesión en su lugar.');
       return;
     }
 
@@ -66,11 +65,11 @@ export default function RegisterScreen() {
     setLoading(true);
 
     setTimeout(() => {
-      // Registrar usuario
-      authStorage.register(name, email, password);
+      // Registrar usuario con la función
+      setRegisteredUser(name, email, password);
       setLoading(false);
       
-      // Navegar directamente al login sin Alert
+      // Navegar al login
       router.push('/login');
     }, 1000);
   };
@@ -180,7 +179,6 @@ export default function RegisterScreen() {
             <Text style={styles.helperText}>Esto aparecerá en tu perfil.</Text>
           </View>
 
-          {/* Hint para el usuario */}
           <View style={styles.hintContainer}>
             <Ionicons name="information-circle" size={16} color="#1DB954" />
             <Text style={styles.hintText}>
