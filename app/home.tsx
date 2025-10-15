@@ -10,11 +10,13 @@ import {
 } from 'react-native';
 import { FontAwesome, Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import { getRegisteredUser, logoutUser } from './login';
+import { getRegisteredUser } from './login';
+import Settings from './main/Settings';  // ← CORREGIDO
 
 export default function HomeScreen() {
   const router = useRouter();
   const [userName, setUserName] = useState<string>('Usuario');
+  const [settingsVisible, setSettingsVisible] = useState(false);
 
   useEffect(() => {
     // Obtener el nombre del usuario registrado
@@ -24,10 +26,9 @@ export default function HomeScreen() {
     }
   }, []);
 
-  const handleLogout = () => {
+  const handleOpenSettings = () => {
     Vibration.vibrate(50);
-    logoutUser();
-    router.replace('/');
+    setSettingsVisible(true);
   };
 
   return (
@@ -35,8 +36,8 @@ export default function HomeScreen() {
       {/* Header */}
       <View style={styles.header}>
         <FontAwesome name="spotify" size={32} color="#1DB954" />
-        <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
-          <Ionicons name="log-out-outline" size={24} color="#fff" />
+        <TouchableOpacity style={styles.settingsButton} onPress={handleOpenSettings}>
+          <Ionicons name="menu" size={28} color="#fff" />
         </TouchableOpacity>
       </View>
 
@@ -134,6 +135,12 @@ export default function HomeScreen() {
           </TouchableOpacity>
         </View>
       </View>
+
+      {/* Settings Menu */}
+      <Settings 
+        visible={settingsVisible} 
+        onClose={() => setSettingsVisible(false)} 
+      />
     </View>
   );
 }
@@ -151,7 +158,7 @@ const styles = StyleSheet.create({
     paddingTop: 50,
     paddingBottom: 20,
   },
-  logoutButton: {
+  settingsButton: {
     padding: 8,
   },
   content: {
